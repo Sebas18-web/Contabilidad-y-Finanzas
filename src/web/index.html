@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema Contable</title>
+    <link rel="stylesheet" href="Styles.css">
+</head>
+<body>
+    <header class="main-header">
+        <div class="container">
+            <h1>Sistema de Facturación Contable</h1>
+            <p class="subtitle">AJAW BALAMK</p>
+        </div>
+    </header>
+
+    <main class="container">
+        <!-- Sección de Facturación -->
+        <section class="facturacion-section" aria-labelledby="facturacion-title">
+            <h2 id="facturacion-title">Generar Factura</h2>
+            
+            <div class="card">
+                <div class="factura-header">
+                    <div class="form-group">
+                        <label for="factura-numero">Número de Factura:</label>
+                        <input type="text" id="factura-numero" placeholder="FAC-001">
+                    </div>
+                    <div class="form-group">
+                        <label for="factura-fecha">Fecha:</label>
+                        <input type="date" id="factura-fecha" value="">
+                    </div>
+                    <div class="form-group">
+                        <label for="factura-cliente">Cliente/Proveedor:</label>
+                        <input type="text" id="factura-cliente" placeholder="Nombre del cliente o proveedor">
+                    </div>
+                </div>
+
+                <div class="detalles-factura">
+                    <h3>Detalles de la Factura</h3>
+                    <div class="factura-items">
+                        <div class="factura-item-header">
+                            <span>Cuenta</span>
+                            <span>Descripción</span>
+                            <span>Cargo</span>
+                            <span>Abono</span>
+                            <span>Acciones</span>
+                        </div>
+                        <div id="factura-items-container">
+                            <!-- Los items se agregarán dinámicamente -->
+                        </div>
+                        <button type="button" id="agregar-item" class="btn-secondary">+ Agregar Cuenta</button>
+                    </div>
+                </div>
+
+                <div class="factura-totales">
+                    <div class="total-fila">
+                        <span>Total Cargos:</span>
+                        <span id="total-cargos-factura">$0.00</span>
+                    </div>
+                    <div class="total-fila">
+                        <span>Total Abonos:</span>
+                        <span id="total-abonos-factura">$0.00</span>
+                    </div>
+                    <div class="total-fila diferencia">
+                        <span>Diferencia:</span>
+                        <span id="diferencia-factura">$0.00</span>
+                    </div>
+                </div>
+
+                <div class="factura-actions">
+                    <button type="button" id="procesar-factura" class="btn-primary">Procesar Factura</button>
+                    <button type="button" id="limpiar-factura" class="btn-secondary">Limpiar Formulario</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Sección de Registro Individual -->
+        <section class="transaction-section" aria-labelledby="transaction-title">
+            <h2 id="transaction-title">Registro Individual de Movimientos</h2>
+            
+            <div class="card">
+                <form id="registro-form" class="transaction-form">
+                    <div class="form-group">
+                        <label for="cuenta">Cuenta Contable:</label>
+                        <select id="cuenta" name="cuenta" required>
+                            <option value="">Seleccione una cuenta</option>
+                        </select>
+                    </div>
+                    
+                    <div class="amount-inputs">
+                        <div class="form-group">
+                            <label for="cargo">Cargo (Débito):</label>
+                            <div class="input-with-symbol">
+                                <span class="currency-symbol">$</span>
+                                <input type="number" id="cargo" name="cargo" step="0.01" min="0" placeholder="0.00">
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="abono">Abono (Crédito):</label>
+                            <div class="input-with-symbol">
+                                <span class="currency-symbol">$</span>
+                                <input type="number" id="abono" name="abono" step="0.01" min="0" placeholder="0.00">
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-actions">
+                        <button type="submit" class="btn-primary">Registrar Movimiento</button>
+                    </div>
+                </form>
+            </div>
+        </section>
+
+        <!-- Asiento de Apertura -->
+        <section class="apertura-section" aria-labelledby="apertura-title">
+            <h2 id="apertura-title">Asiento de Apertura</h2>
+            
+            <div class="card">
+                <div class="balance-container">
+                    <div class="balance-column activo-column">
+                        <h3>Activos</h3>
+                        <div id="apertura-activo-container" class="cuentas-list"></div>
+                        <div class="total-row">
+                            <span>Total Activos:</span>
+                            <span id="total-apertura-activo" class="total-amount">$0.00</span>
+                        </div>
+                    </div>
+                    
+                    <div class="balance-column pasivo-column">
+                        <h3>Pasivos</h3>
+                        <div id="apertura-pasivo-container" class="cuentas-list"></div>
+                        <div class="total-row">
+                            <span>Total Pasivos:</span>
+                            <span id="total-apertura-pasivo" class="total-amount">$0.00</span>
+                        </div>
+                    </div>
+                    
+                    <div class="balance-column capital-column">
+                        <h3>Capital</h3>
+                        <div id="apertura-capital-container" class="cuentas-list"></div>
+                        <div class="total-row">
+                            <span>Total Capital:</span>
+                            <span id="total-apertura-capital" class="total-amount">$0.00</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="balance-status">
+                    <h4 id="apertura-balance-check" class="balance-message">Asiento de Apertura</h4>
+                </div>
+            </div>
+        </section>
+
+        <!-- Balance General Actual -->
+<section class="balance-section" aria-labelledby="balance-title">
+    <h2 id="balance-title">Balance General Actual</h2>
+    
+    <div class="card">
+        <div class="balance-container">
+            <div class="balance-column activo-column">
+                <h3>Activos</h3>
+                <div id="activo-container" class="cuentas-list"></div>
+                <div class="total-row">
+                    <span>Total Activos:</span>
+                    <span id="total-activo" class="total-amount">$0.00</span>
+                </div>
+            </div>
+            
+            <div class="balance-column pasivo-column">
+                <h3>Pasivos</h3>
+                <div id="pasivo-container" class="cuentas-list"></div>
+                <div class="total-row">
+                    <span>Total Pasivos:</span>
+                    <span id="total-pasivo" class="total-amount">$0.00</span>
+                </div>
+            </div>
+            
+            <div class="balance-column capital-column">
+                <h3>Capital</h3>
+                <div id="capital-container" class="cuentas-list"></div>
+                <div class="total-row">
+                    <span>Total Capital:</span>
+                    <span id="total-capital" class="total-amount">$0.00</span>
+                </div>
+            </div>
+        </div>
+        
+        <div class="balance-status">
+            <h4 id="balance-check" class="balance-message">El balance está equilibrado</h4>
+            
+            <!-- Nueva ecuación contable -->
+            <div class="balance-equation">
+                <div class="equation-part">
+                    <span class="equation-label">Total Activos:</span>
+                    <span id="eq-total-activos" class="equation-value">$0.00</span>
+                </div>
+                <div class="equation-operator">=</div>
+                <div class="equation-part">
+                    <span class="equation-label">Total Pasivos + Capital:</span>
+                    <span id="eq-total-pasivo-capital" class="equation-value">$0.00</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+        <!-- Historial de Transacciones -->
+        <section class="history-section" aria-labelledby="history-title">
+            <div class="section-header">
+                <h2 id="history-title">Historial de Transacciones</h2>
+                <div>
+                    <button id="export-btn" class="btn-secondary">Exportar a CSV</button>
+                    <button id="toggle-vista" class="btn-secondary">Ver por Facturas</button>
+                </div>
+            </div>
+            
+            <div class="card">
+                <!-- Vista de Transacciones Individuales -->
+                <div id="vista-transacciones" class="vista-activa">
+                    <div class="table-container">
+                        <table id="transactions-table">
+                            <thead>
+                                <tr>
+                                    <th>Fecha</th>
+                                    <th>Factura</th>
+                                    <th>Cuenta</th>
+                                    <th class="text-right">Cargo</th>
+                                    <th class="text-right">Abono</th>
+                                </tr>
+                            </thead>
+                            <tbody id="history-body">
+                                <tr>
+                                    <td colspan="5" class="no-data">No hay transacciones registradas</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Vista de Facturas -->
+                <div id="vista-facturas" class="vista-oculta">
+                    <div class="table-container">
+                        <table id="facturas-table">
+                            <thead>
+                                <tr>
+                                    <th>N° Factura</th>
+                                    <th>Fecha</th>
+                                    <th>Cliente/Proveedor</th>
+                                    <th class="text-right">Total</th>
+                                    <th>Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody id="facturas-body">
+                                <tr>
+                                    <td colspan="5" class="no-data">No hay facturas registradas</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Modal para detalles de factura -->
+    <div id="factura-modal" class="modal" role="dialog" aria-labelledby="modal-factura-title" aria-hidden="true">
+        <div class="modal-content modal-lg">
+            <h3 id="modal-factura-title">Detalles de Factura</h3>
+            <div id="factura-detalles"></div>
+            <div class="modal-actions">
+                <button id="cerrar-factura" class="btn-secondary">Cerrar</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="scrip.js"></script>
+</body>
+</html>
